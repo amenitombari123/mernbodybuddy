@@ -44,7 +44,7 @@ export default function Password() {
 
             <div className="textbox flex flex-col items-center gap-6">
 
-              <input {...formik.getFieldProps('password')} className={styles.textbox} type="text" placeholder='password'/>
+              <input {...formik.getFieldProps('password')} className={styles.textbox} type="Password" placeholder='password'/>
               <button className = {styles.btn} type ='submit'>  sign in </button>
 
             </div>
