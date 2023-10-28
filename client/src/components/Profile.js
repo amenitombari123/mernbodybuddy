@@ -16,7 +16,7 @@ export default function Profile(){
 
   const formik = useFormik({
     initialValues : {
-      firstname:'',
+      firstName:'',
       lastname:'',
       email:'exemple.bb@gmail.com',
       mbile:'exemple123',
