@@ -24,22 +24,21 @@ export async function getUser({ username }){
 }
 
 /** register user function */
-export async function registerUser(credentials){
+export async function registerUser(data) {
     try {
-        const { data : { msg }, status } = await axios.post(`/api/register`, credentials);
-
-        let { username, email } = credentials;
-
-        /** send email */
-        if(status === 201){
-            await axios.post('/api/registerMail', { username, userEmail : email, text : msg})
-        }
-
-        return Promise.resolve(msg)
+      const response = await axios.post('/api/register', data);
+      return response.data;
     } catch (error) {
-        return Promise.reject({ error })
+      if (error.response && error.response.status === 400) {
+        // Handle bad request errors
+        return error.response.data;
+      } else {
+        // Handle other errors
+        return { error: 'Could not Register' };
+      }
     }
-}
+  }
+  
 
 /** login function */
 export async function verifyPassword({ username, password }){
@@ -53,17 +52,33 @@ export async function verifyPassword({ username, password }){
     }
 }
 /** update user profile function */
-export async function updateUser(response){
-    try {
-        
-        const token = await localStorage.getItem('token');
-        const data = await axios.put('/api/updateuser', response, { headers : { "Authorization" : `Bearer ${token}`}});
 
-        return Promise.resolve({ data })
-    } catch (error) {
-        return Promise.reject({ error : "Couldn't Update Profile...!"})
+
+export async function updateUser(response) {
+  try {
+    const token = await localStorage.getItem('token');
+    const data = await axios.put('/api/updateuser', response, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    // Check if the API request was successful
+    if (data.status === 200) {
+      return Promise.resolve({ data });
+    } else {
+      return Promise.reject({ error: 'Failed to update profile' });
     }
+  } catch (error) {
+    if (error.response && error.response.data) {
+      // If the server provides an error message, return it
+      return Promise.reject({ error: error.response.data.message });
+    } else {
+      // Handle other types of errors
+      console.error('Error updating profile:', error);
+      return Promise.reject({ error: 'Failed to update profile' });
+    }
+  }
 }
+
 /** generate OTP */
 export async function generateOTP(username){
     try {
