@@ -34,44 +34,49 @@ export async function verifyUser(req, res, next){
   "profile": ""
 }*/
 export async function register(req, res) {
-  try {
-    const { username, password, profile, email } = req.body;
-
-    // Check for the existing user
-    const existUsername = await UserModel.findOne({ username }).exec();
-
-    // Check for the existing email
-    const existEmail = await UserModel.findOne({ email }).exec();
-
-    if (existUsername) {
-      return res.status(400).send({ error: 'Please use a unique username' });
+    try {
+      const { username, password, profile, email } = req.body;
+  
+      // Check for the existing user
+      const existUsername = UserModel.findOne({ username }).exec();
+  
+      // Check for the existing email
+      const existEmail = UserModel.findOne({ email }).exec();
+  
+      const [existingUsername, existingEmail] = await Promise.all([
+        existUsername,
+        existEmail,
+      ]);
+  
+      if (existingUsername) {
+        return res.status(400).send({ error: "Please use a unique username" });
+      }
+  
+      if (existingEmail) {
+        return res.status(400).send({ error: "Please use a unique email" });
+      }
+  
+      if (password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+  
+        const user = new UserModel({
+          username,
+          password: hashedPassword,
+          profile: profile || "",
+          email,
+        });
+  
+        const result = await user.save();
+  
+        res.status(201).send({ msg: "User Registered Successfully" });
+      } else {
+        res.status(400).send({ error: "Password is required" });
+      }
+    } catch (error) {
+      res.status(500).send({ error: error.message });
     }
-
-    if (existEmail) {
-      return res.status(400).send({ error: 'Please use a unique email' });
-    }
-
-    if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      const user = new UserModel({
-        username,
-        password: hashedPassword,
-        profile: profile || '',
-        email,
-      });
-
-      const result = await user.save();
-
-      res.status(201).send({ msg: 'User Registered Successfully' });
-    } else {
-      res.status(400).send({ error: 'Password is required' });
-    }
-  } catch (error) {
-    res.status(500).send({ error: error.message });
   }
-}
-
+  
 
 /** POST: http://localhost:8080/api/login
  * @param: {

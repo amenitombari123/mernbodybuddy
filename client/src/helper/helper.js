@@ -1,8 +1,18 @@
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 axios.defaults.baseURL = process.env.REACT_APP_SERVER_DOMAIN;
 
 /** Make API Requests */
+
+/** To get username from Token */
+export async function getUsername() {
+  const token = localStorage.getItem('token');
+  if (!token) return Promise.reject("Cannot find Token");
+  const decode = jwtDecode(token);
+  return decode;
+}
+
 
 /** authenticate function */
 export async function authenticate(username){
@@ -24,21 +34,22 @@ export async function getUser({ username }){
 }
 
 /** register user function */
-export async function registerUser(data) {
+export async function registerUser(credentials){
     try {
-      const response = await axios.post('/api/register', data);
-      return response.data;
+        const { data : { msg }, status } = await axios.post(`/api/register`, credentials);
+
+        let { username, email } = credentials;
+
+        /** send email */
+        if(status === 201){
+            await axios.post('/api/registerMail', { username, userEmail : email, text : msg})
+        }
+
+        return Promise.resolve(msg)
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        // Handle bad request errors
-        return error.response.data;
-      } else {
-        // Handle other errors
-        return { error: 'Could not Register' };
-      }
+        return Promise.reject({ error })
     }
-  }
-  
+}
 
 /** login function */
 export async function verifyPassword({ username, password }){
@@ -51,32 +62,18 @@ export async function verifyPassword({ username, password }){
         return Promise.reject({ error : "Password doesn't Match...!"})
     }
 }
+
 /** update user profile function */
+export async function updateUser(response){
+    try {
+        
+        const token = await localStorage.getItem('token');
+        const data = await axios.put('/api/updateuser', response, { headers : { "Authorization" : `Bearer ${token}`}});
 
-
-export async function updateUser(response) {
-  try {
-    const token = await localStorage.getItem('token');
-    const data = await axios.put('/api/updateuser', response, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    // Check if the API request was successful
-    if (data.status === 200) {
-      return Promise.resolve({ data });
-    } else {
-      return Promise.reject({ error: 'Failed to update profile' });
+        return Promise.resolve({ data })
+    } catch (error) {
+        return Promise.reject({ error : "Couldn't Update Profile...!"})
     }
-  } catch (error) {
-    if (error.response && error.response.data) {
-      // If the server provides an error message, return it
-      return Promise.reject({ error: error.response.data.message });
-    } else {
-      // Handle other types of errors
-      console.error('Error updating profile:', error);
-      return Promise.reject({ error: 'Failed to update profile' });
-    }
-  }
 }
 
 /** generate OTP */
@@ -95,6 +92,7 @@ export async function generateOTP(username){
         return Promise.reject({ error });
     }
 }
+
 /** verify OTP */
 export async function verifyOTP({ username, code }){
     try {
