@@ -211,12 +211,10 @@ export async function verifyOTP(req,res){
 /** GET: http://localhost:8080/api/createResetSession */
 export async function createResetSession(req,res){
   if(req.app.locals.resetSession){
-   req.app.locals.resetSession = false; //allow acess only this route
-       return res.status(201).send({ msg:"access granted!"})
+       return res.status(201).send({ flag : req.app.locals.resetSession})
   }
   return res.status(440).send({error : "Session expired!"})
 }
-
 // update the password when we have valid session
 /** PUT: http://localhost:8080/api/resetPassword */
 
