@@ -1,6 +1,12 @@
-import React from 'react'
-import {createBrowserRouter, RouterProvider} from 'react-router-dom'
-/**Import all components*/
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Box } from '@mui/material';
+import './App.css';
+import ExerciceDetail from './pages/ExerciceDetail';
+import Home from './pages/Home';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+
 import Username from './components/Username';
 import Password from './components/Password';
 import Reset from './components/Reset';
@@ -9,51 +15,40 @@ import Recovery from './components/Recovery';
 import Profile from './components/Profile';
 import PageNotFound from './components/PageNotFound';
 
-/** auth middleware */
-import { AuthorizeUser, ProtectRoute } from './middleware/auth'
+const App = () => (
+  <Router>
+    <Box width="400px" sx={{ width: { xl: '1488px' } }} m="auto">
+      <Routes>
+        <Route
+          path="/home"
+          element={
+            <>
+              <Navbar />
+              <Home />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/exercise/:id"
+          element={
+            <>
+              <Navbar />
+              <ExerciceDetail />
+              <Footer />
+            </>
+          }
+        />
+        <Route path="/" element={<Username />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/password" element={<Password />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/recovery" element={<Recovery />} />
+        <Route path="/reset" element={<Reset />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </Box>
+  </Router>
+);
 
-/**root routes */
-const router = createBrowserRouter([
-
-    {
-        path : '/',
-        element : <Username></Username>
-    },
-    {
-        path : '/register',
-        element : <Register></Register>
-    },
-    {
-        path : '/password',
-        element : <ProtectRoute><Password /></ProtectRoute>
-    },
-    {
-        path : '/profile',
-        element : <AuthorizeUser><Profile /></AuthorizeUser>
-    },
-
-    {
-        path : '/recovery',
-        element : <Recovery></Recovery>
-    },
-
-    {
-        path : '/reset',
-        element : <Reset>register Route</Reset>
-    },
-    {
-        path : '*',
-        element : <PageNotFound>register Route</PageNotFound>
-    },
-])
-
-
-export default function App() {
-  return (
-    <main>
-        
-  <RouterProvider router = {router}></RouterProvider>
-  
-  </main>
-  )
-}
+export default App;
