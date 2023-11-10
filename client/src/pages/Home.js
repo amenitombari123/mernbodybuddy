@@ -15,6 +15,7 @@ console.log(bodyPart)
       <SearchExercises setExercises={setExercises} bodyPart={bodyPart} setBodyPart={setBodyPart} />
       <Exercises exercises={exercises} setExercises={setExercises} bodyPart={bodyPart} />
     </Box>
+    
   );
 };
 

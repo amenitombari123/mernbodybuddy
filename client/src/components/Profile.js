@@ -48,12 +48,12 @@ export default function Profile() {
     setFile(base64);
   }
 
-  // logout handler function
+  /* logout handler function
   function userLogout(){
     localStorage.removeItem('token');
     navigate('/')
   }
-
+*/
   if(isLoading) return <h1 className='text-2xl font-bold'>isLoading</h1>;
   if(serverError) return <h1 className='text-xl text-red-500'>{serverError.message}</h1>
 
@@ -99,9 +99,6 @@ export default function Profile() {
                   
               </div>
 
-              <div className="text-center py-4">
-                <span className='text-gray-500'>come back later? <button onClick={userLogout} className='text-red-500' to="/">Logout</button></span>
-              </div>
 
           </form>
 
