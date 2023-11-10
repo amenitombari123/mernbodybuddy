@@ -9,6 +9,9 @@ import { useAuthStore } from '../store/store';
 import { verifyPassword } from '../helper/helper';
 import styles from '../styles/Username.module.css';
 
+// Import the logo image
+import Logo from '../assets/images/Logo.png';
+
 export default function Password() {
   const navigate = useNavigate();
   const { username } = useAuthStore((state) => state.auth);
@@ -22,21 +25,30 @@ export default function Password() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      let loginPromise = verifyPassword({ username, password: values.password });
-      toast.promise(loginPromise, {
-        loading: 'Checking...',
-        success: <b>Login Successfully...!</b>,
-        error: <b>Password Not Match!</b>,
-      });
-      loginPromise.then((res) => {
-        let { token } = res.data;
+      try {
+        let loginPromise = verifyPassword({ username, password: values.password });
+        toast.promise(loginPromise, {
+          loading: 'Checking...',
+          success: <b>Login Successfully...!</b>,
+          error: <b>Password Not Match!</b>,
+        });
+        const res = await loginPromise;
+        const { token } = res.data;
         localStorage.setItem('token', token);
         navigate('/home');
-      });
+      } catch (error) {
+        // Handle the error here and show a toast message
+        toast.error(<b>Password Doesn't Match!</b>);
+      }
     },
   });
 
-  if (isLoading) return <h1 className="text-2xl font-bold">isLoading</h1>;
+  if (isLoading) {
+    // Show a loading toast message instead of a static text
+    toast.loading('Checking...', { duration: 5000 }); // Adjust the duration as needed
+    return null; // Render nothing while loading
+  }
+
   if (serverError) return <h1 className="text-xl text-red-500">{serverError.message}</h1>;
 
   return (
@@ -45,6 +57,13 @@ export default function Password() {
       <div className="flex justify-center items-center h-screen">
         <div className={styles.glass}>
           <div className="title flex flex-col items-center">
+            {/* Include the logo with specific dimensions and margin */}
+            <img
+              src={Logo}
+              alt="Logo"
+              style={{ width: '48px', height: '48px', margin: '0px 20px' }}
+            />
+
             <h4 className="text-5xl font-bold"> HELLO {apiData?.firstName || username || 'User'} </h4>
             <span className="py-4 text-xl w-2/3 text-center text-gray-500">
               Explore More by connecting with us.
