@@ -28,8 +28,10 @@ export default function Register() {
       registerPromise
         .then(function () {
           // Registration was successful, show a success message and redirect
-          toast.success('Register Successfully...!');
-          navigate('/');
+          toast.success('Register Successfully...!', { duration: 3000 }); // Display success message for 3 seconds
+          setTimeout(() => {
+            navigate('/');
+          }, 3000);
         })
         .catch(function (error) {
           if (error.message === 'Existing username or email!') {
@@ -77,7 +79,8 @@ export default function Register() {
               </div>
               <div className="text-center py-4">
                 <span className="text-gray-500">
-                  Already have an account? <Link className="text-red-500" to="/">
+                  Already have an account?{' '}
+                  <Link className="text-red-500" to="/">
                     Login in Now
                   </Link>
                 </span>
