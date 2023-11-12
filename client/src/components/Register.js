@@ -35,7 +35,7 @@ export default function Register() {
           if (error.message === 'Existing username or email!') {
             toast.error('Existing username or email!');
           } else {
-            toast.error('Could not Register.');
+            toast.error('Existing username or email!');
           }
         });
     },

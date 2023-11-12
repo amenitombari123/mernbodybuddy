@@ -30,7 +30,7 @@ export default function Password() {
         toast.promise(loginPromise, {
           loading: 'Checking...',
           success: <b>Login Successfully...!</b>,
-          error: <b>Password Not Match!</b>,
+          error: <b>Password doesn't match...!</b>,
         });
         const res = await loginPromise;
         const { token } = res.data;
@@ -38,7 +38,7 @@ export default function Password() {
         navigate('/home');
       } catch (error) {
         // Handle the error here and show a toast message
-        toast.error(<b>Password Doesn't Match!</b>);
+       // toast.error(<b>"Password doesn't match...!"</b>);
       }
     },
   });
