@@ -15,6 +15,8 @@ import Recovery from './components/Recovery';
 import Profile from './components/Profile';
 import PageNotFound from './components/PageNotFound';
 
+import { ProtectRoute, AuthorizeUser } from './middleware/auth';
+
 const App = () => (
   <Router>
     <Box width="400px" sx={{ width: { xl: '1488px' } }} m="auto">
@@ -22,27 +24,51 @@ const App = () => (
         <Route
           path="/home"
           element={
-            <>
+            <AuthorizeUser>
               <Navbar />
-              <Home />
+              <ProtectRoute>
+                <Home />
+              </ProtectRoute>
               <Footer />
-            </>
+            </AuthorizeUser>
           }
         />
         <Route
           path="/exercise/:id"
           element={
-            <>
+            <AuthorizeUser>
               <Navbar />
               <ExerciceDetail />
               <Footer />
-            </>
+            </AuthorizeUser>
           }
         />
         <Route path="/" element={<Username />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/password" element={<Password />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route
+          path="/password"
+          element={
+            <AuthorizeUser>
+              <Navbar />
+              <ProtectRoute>
+                <Password />
+              </ProtectRoute>
+              <Footer />
+            </AuthorizeUser>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <AuthorizeUser>
+              <Navbar />
+              <ProtectRoute>
+                <Profile />
+              </ProtectRoute>
+              <Footer />
+            </AuthorizeUser>
+          }
+        />
         <Route path="/recovery" element={<Recovery />} />
         <Route path="/reset" element={<Reset />} />
         <Route path="*" element={<PageNotFound />} />
