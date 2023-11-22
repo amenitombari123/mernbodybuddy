@@ -1,7 +1,7 @@
 import UserModel from '../model/User.model.js'
+import Feedback from "../model/feedback.model.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import Feedback from "../model/feedback.model.js";
 import ENV from '../config.js'
 //import mongoose from 'mongoose'; // Import Mongoose
 import otpGenerator from 'otp-generator'
