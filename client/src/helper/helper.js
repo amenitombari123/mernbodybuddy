@@ -111,26 +111,3 @@ export async function resetPassword({ username, password }) {
   }
 }
 
-/** add weight entry */
-export async function addWeight({ weight }) {
-  try {
-    const token = await localStorage.getItem('token');
-    const data = await axios.post('/api/addWeight', { weight }, { headers: { "Authorization": `Bearer ${token}` } });
-
-    return Promise.resolve({ data });
-  } catch (error) {
-    return Promise.reject({ error: "Couldn't add weight entry...!" });
-  }
-}
-
-/** get weight entries */
-export async function getWeightEntries() {
-  try {
-    const token = await localStorage.getItem('token');
-    const data = await axios.get('/api/getWeightEntries', { headers: { "Authorization": `Bearer ${token}` } });
-
-    return Promise.resolve(data);
-  } catch (error) {
-    return Promise.reject({ error: "Couldn't fetch weight entries...!" });
-  }
-}

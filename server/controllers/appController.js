@@ -1,6 +1,5 @@
 import UserModel from '../model/User.model.js'
 import Feedback from "../model/feedback.model.js";
-import WeightEntry from '../model/WeightEntry.model.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import ENV from '../config.js'
@@ -87,45 +86,48 @@ export async function register(req, res) {
 }
 */
 
-export async function login(req,res){
-   
-    const { username, password } = req.body;
+// appController.js
+// ...
 
-    try {
-        
-        UserModel.findOne({ username })
-            .then(user => {
-                bcrypt.compare(password, user.password)
-                    .then(passwordCheck => {
+export async function login(req, res) {
+  const { username, password } = req.body;
 
-                        if(!passwordCheck) return res.status(400).send({ error: "Don't have Password"});
+  try {
+    const user = await UserModel.findOne({ username });
 
-                        // create jwt token
-                        const token = jwt.sign({
-                                        userId: user._id,
-                                        username : user.username
-                                    }, ENV.JWT_SECRET , { expiresIn : "24h"});
-
-                        return res.status(200).send({
-                            msg: "Login Successful...!",
-                            username: user.username,
-                            token
-                        });                                    
-
-                    })
-                    .catch(error =>{
-                        return res.status(400).send({ error: "Password does not Match"})
-                    })
-            })
-            .catch( error => {
-                return res.status(404).send({ error : "Username not Found"});
-            })
-
-    } catch (error) {
-        return res.status(500).send({ error});
+    if (!user) {
+      return res.status(404).send({ error: "Username not found" });
     }
-}
 
+    bcrypt.compare(password, user.password).then((passwordCheck) => {
+      if (!passwordCheck) {
+        return res.status(400).send({ error: "Password does not match" });
+      }
+
+      // Retrieve user's weight entries
+      const { password: _, weights, ...rest } = user.toJSON();
+
+      const token = jwt.sign(
+        {
+          userId: user._id,
+          username: user.username,
+        },
+        ENV.JWT_SECRET,
+        { expiresIn: "24h" }
+      );
+
+      return res.status(200).send({
+        msg: "Login Successful...!",
+        username: user.username,
+        token,
+        weights,
+        ...rest,
+      });
+    });
+  } catch (error) {
+    return res.status(500).send({ error });
+  }
+}
 
 /** GET: http://localhost:8080/api/user/example123 */
 
@@ -283,36 +285,23 @@ export async function getAllFeedback(req, res) {
   }
 }
 
-/** POST: http://localhost:8080/api/addWeight */
+// POST : http://localhost:8080/api/addWeight
 export async function addWeight(req, res) {
   try {
-    const { weight } = req.body;
-    const userId = req.user.userId;
+    const { username, weight, date } = req.body;
 
-    const newWeightEntry = new WeightEntry({
-      user: userId,
-      weight,
-    });
+    const user = await UserModel.findOne({ username });
 
-    await newWeightEntry.save();
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
 
-    // Update the user's weights array with the new weight entry
-    await UserModel.findByIdAndUpdate(userId, { $push: { weights: newWeightEntry._id } });
+    user.weights.push({ weight, date });
+    await user.save();
 
-    res.status(201).send({ msg: 'Weight added successfully' });
+    res.status(201).send({ msg: "Weight entry added successfully" });
   } catch (error) {
-    res.status(500).send({ error: error.message });
-  }
-}
-
-/** GET: http://localhost:8080/api/getWeightEntries */
-export async function getWeightEntries(req, res) {
-  try {
-    const userId = req.user.userId; // we have a middleware to extract user ID from token
-    const weightEntries = await WeightEntry.find({ user: userId }).sort({ date: 'desc' });
-
-    res.status(200).send(weightEntries);
-  } catch (error) {
-    res.status(500).send({ error: error.message });
+    console.error(error);
+    res.status(500).send({ error: "Internal server error" });
   }
 }
