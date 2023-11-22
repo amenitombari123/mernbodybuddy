@@ -1,20 +1,35 @@
-import React, { useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
-import { useFormik } from 'formik';
-import styles from '../styles/Username.module.css';// Update the module CSS file if needed
+// components/Feedback.js
 
-export default function FeedbackForm() {
+import React from 'react';
+import toast, { Toaster } from 'react-hot-toast'; // Import Toaster here
+import { useFormik } from 'formik';
+import styles from '../styles/Username.module.css';
+
+const Feedback = () => {
   const formik = useFormik({
     initialValues: {
       shortFeedback: '',
       longFeedback: '',
     },
     onSubmit: async (values) => {
-      // Handle sending feedback, e.g., API call or other logic
-      console.log('Feedback submitted:', values);
+      try {
+        const response = await fetch('http://localhost:8080/api/feedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(values),
+        });
 
-      // Display a success message
-      toast.success('Feedback Sent Successfully!', { duration: 3000 });
+        if (response.ok) {
+          toast.success('Feedback submitted successfully!', { duration: 3000 });
+        } else {
+          toast.error('Failed to submit feedback. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error submitting feedback:', error);
+        toast.error('An error occurred. Please try again later.');
+      }
     },
   });
 
@@ -58,4 +73,6 @@ export default function FeedbackForm() {
       </div>
     </div>
   );
-}
+};
+
+export default Feedback;
