@@ -1,5 +1,6 @@
 import UserModel from '../model/User.model.js'
 import Feedback from "../model/feedback.model.js";
+import WeightEntry from '../model/WeightEntry.model.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import ENV from '../config.js'
@@ -282,3 +283,36 @@ export async function getAllFeedback(req, res) {
   }
 }
 
+/** POST: http://localhost:8080/api/addWeight */
+export async function addWeight(req, res) {
+  try {
+    const { weight } = req.body;
+    const userId = req.user.userId;
+
+    const newWeightEntry = new WeightEntry({
+      user: userId,
+      weight,
+    });
+
+    await newWeightEntry.save();
+
+    // Update the user's weights array with the new weight entry
+    await UserModel.findByIdAndUpdate(userId, { $push: { weights: newWeightEntry._id } });
+
+    res.status(201).send({ msg: 'Weight added successfully' });
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+}
+
+/** GET: http://localhost:8080/api/getWeightEntries */
+export async function getWeightEntries(req, res) {
+  try {
+    const userId = req.user.userId; // we have a middleware to extract user ID from token
+    const weightEntries = await WeightEntry.find({ user: userId }).sort({ date: 'desc' });
+
+    res.status(200).send(weightEntries);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+}

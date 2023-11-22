@@ -14,6 +14,7 @@ import Register from './components/Register';
 import Recovery from './components/Recovery';
 import Profile from './components/Profile';
 import PageNotFound from './components/PageNotFound';
+import WeightTracker from './components/WeightTracker';
 
 import { ProtectRoute, AuthorizeUser } from './middleware/auth';
 
@@ -68,13 +69,25 @@ const App = () => (
             </AuthorizeUser>
           }
         />
+        <Route
+          path="/weighttracker"
+          element={ // Add a new Route for the WeightTracker component
+            <AuthorizeUser>
+              <Navbar />
+            
+                <WeightTracker />
+              
+              <Footer />
+            </AuthorizeUser>
+          }
+        />
             <Route
           path="/feedback"
           element={
             <AuthorizeUser>
               <Navbar />
-              <Feedback /> {/* Corrected: Render the Feedback component */}
-              <Footer />
+              <Feedback />
+               <Footer />
             </AuthorizeUser>
           }
         />
