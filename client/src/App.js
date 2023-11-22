@@ -6,7 +6,7 @@ import ExerciceDetail from './pages/ExerciceDetail';
 import Home from './pages/Home';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-
+import Feedback from './components/FeedBack'; 
 import Username from './components/Username';
 import Password from './components/Password';
 import Reset from './components/Reset';
@@ -49,7 +49,6 @@ const App = () => (
           path="/password"
           element={
             <AuthorizeUser>
-              <Navbar />
               <ProtectRoute>
                 <Password />
               </ProtectRoute>
@@ -65,6 +64,16 @@ const App = () => (
               <ProtectRoute>
                 <Profile />
               </ProtectRoute>
+              <Footer />
+            </AuthorizeUser>
+          }
+        />
+            <Route
+          path="/feedback"
+          element={
+            <AuthorizeUser>
+              <Navbar />
+              <Feedback /> {/* Corrected: Render the Feedback component */}
               <Footer />
             </AuthorizeUser>
           }
