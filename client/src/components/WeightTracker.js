@@ -83,13 +83,7 @@ const WeightTracker = () => {
                   placeholder="Weight*"
                 />
 
-                {/* Date input field */}
-                <input
-                  {...formik.getFieldProps('date')}
-                  className={styles.textbox}
-                  type="text"
-                  placeholder="Date (optional)"
-                />
+            
 
                 {/* Submit button */}
                 <button className={styles.btn} type="submit">

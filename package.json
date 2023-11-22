@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@mui/x-charts": "^6.18.1",
+    "apexcharts": "^3.44.0",
+    "chart.js": "^4.4.0",
+    "react-apexcharts": "^1.4.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-datepicker": "^4.23.0"
+  }
+}
