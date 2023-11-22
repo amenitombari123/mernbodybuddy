@@ -1,18 +1,23 @@
+// database.js
 import mongoose from "mongoose";
-
 import { MongoMemoryServer } from "mongodb-memory-server";
-import ENV from '../config.js'
+import ENV from '../config.js';
 
-async function connect(){
+import Feedback from "../model/feedback.model.js";
 
-    const mongod = await MongoMemoryServer.create();
-    const getUri = mongod.getUri();
+async function connect() {
+  const mongod = await MongoMemoryServer.create();
+  const getUri = mongod.getUri();
 
-    mongoose.set('strictQuery', true)
-    // const db = await mongoose.connect(getUri);
-    const db = await mongoose.connect(ENV.ATLAS_URI);
-    console.log("Database Connected")
-    return db;
+  mongoose.set('strictQuery', true);
+
+  const db = await mongoose.connect(ENV.ATLAS_URI);
+
+  // Add the Feedback model to the connection
+  mongoose.model.Feedbacks = Feedback;
+
+  console.log("Database Connected");
+  return db;
 }
 
 export default connect;

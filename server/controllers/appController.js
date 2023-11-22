@@ -1,6 +1,7 @@
 import UserModel from '../model/User.model.js'
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import Feedback from "../model/feedback.model.js";
 import ENV from '../config.js'
 //import mongoose from 'mongoose'; // Import Mongoose
 import otpGenerator from 'otp-generator'
@@ -246,6 +247,38 @@ export async function resetPassword(req, res) {
     }
   } catch (error) {
     return res.status(401).send({ error });
+  }
+}
+
+/** POST: http://localhost:8080/api/feedback */
+export async function submitFeedback(req, res) {
+  try {
+    const { shortFeedback, longFeedback } = req.body;
+
+    if (!shortFeedback || !longFeedback) {
+      return res.status(400).send({ error: "Both shortFeedback and longFeedback are required" });
+    }
+
+    const feedback = new Feedback({
+      shortFeedback,
+      longFeedback,
+    });
+
+    const result = await feedback.save();
+
+    res.status(201).send({ msg: "Feedback Submitted Successfully" });
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+}
+
+/** GET: http://localhost:8080/api/feedback */
+export async function getAllFeedback(req, res) {
+  try {
+    const allFeedback = await Feedback.find();
+    res.status(200).send(allFeedback);
+  } catch (error) {
+    res.status(500).send({ error: "Error retrieving feedback" });
   }
 }
 
